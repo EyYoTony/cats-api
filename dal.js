@@ -1,4 +1,4 @@
-const { append, filter } = require('ramda')
+const { append, find, map } = require('ramda')
 
 const catsData = [
   {
@@ -25,7 +25,7 @@ const catsData = [
 ]
 
 function add(cat, callback) {
-  console.log('added cat or hotdog')
+  callback(append(catsData, cat))
 }
 
 function listCats(callback) {
@@ -35,13 +35,28 @@ function listCats(callback) {
 
 function listCat(catID, callback) {
   //good - callback(null, data), bad - callback(err)
-  callback(null, filter(cat => cat.id == catID, catsData))
+  callback(null, find(cat => cat.id == catID, catsData))
+}
+
+function replaceCat(updatedCat, catID, callback) {
+  console.log(map(cat => cat.id == catID, catsData))
+  callback(
+    null,
+    map(cat => {
+      if (cat.id == catID) {
+        return updatedCat
+      } else {
+        return cat
+      }
+    }, catsData)
+  )
 }
 
 const dal = {
   add,
   listCats,
-  listCat
+  listCat,
+  replaceCat
 }
 
 module.exports = dal

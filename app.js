@@ -4,7 +4,9 @@ const { filter, pathOr } = require('ramda')
 const dal = require('./dal.js')
 const port = process.env.PORT || 4000
 const HTTPError = require('node-http-error')
+const bodyParser = require('body-parser')
 
+app.use(bodyParser.json())
 //  C - create (POST) a single cat
 //  R - read (GET)  a single cat
 //  U - update (PUT) a single cat
@@ -16,6 +18,20 @@ const HTTPError = require('node-http-error')
 //   UPDATE -  PUT /cats/:id
 //   DELETE -  DELETE /cats/:id
 //   LIST   -  GET /cats
+
+app.put('/cats/:id', function(req, res, next) {
+  dal.replaceCat(req.body, req.params.id, function(err, data) {
+    if (err) return next(new HTTPError(err.status, err.message, err))
+    res.status(200).send(data)
+  })
+})
+
+app.post('/cats', function(req, res, next) {
+  dal.add(req.body, function(err, data) {
+    if (err) return next(new HTTPError(err.status, err.message, err))
+    res.status(201).send(data)
+  })
+})
 
 app.get('/', (req, res, next) => {
   res.send('Welcome to cats (and hotdogs) API')
